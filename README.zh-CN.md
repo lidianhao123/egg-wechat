@@ -35,5 +35,8 @@ $ npm stop
 - 使用 `npm test` 来执行单元测试。
 - 使用 `npm run autod` 来自动检测依赖更新，详细参见 [autod](https://www.npmjs.com/package/autod) 。
 
+## License
+
+[MIT](LICENSE)
 
 [egg]: https://eggjs.org

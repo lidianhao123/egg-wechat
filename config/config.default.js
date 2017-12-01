@@ -9,5 +9,18 @@ module.exports = appInfo => {
   // add your config here
   config.middleware = [];
 
+  config.security = {
+    csrf: {
+      ignore: '/wechat', // 忽略微信推送 POST 消息的 csrf 验证
+    },
+  };
+
+  // 请在 config.prod.js 中配置实际的值
+  config.wechat = {
+    token: '',
+    appid: '',
+    encodingAESKey: '',
+  };
+
   return config;
 };

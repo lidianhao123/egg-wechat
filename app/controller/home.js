@@ -63,7 +63,7 @@ class HomeController extends Controller {
     }
     app.logger.info('test ctx.href = %s', ctx.href);
     const param = Object.assign({}, defaultParam, {
-      url: ctx.href, // 参考 http://blog.csdn.net/zhanjianshinian/article/details/43954783
+      url: ctx.href, // 参考 http://blog.csdn.net/zhanjianshinian/article/details/43954783 修改 Nginx 配置
     });
     const config = JSON.stringify(await app.wechatApi.getJsConfig(param));
     app.logger.info('before render');

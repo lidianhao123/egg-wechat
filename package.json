@@ -1,12 +1,16 @@
 {
-  "name": "wechat",
+  "name": "egg-wechat",
   "version": "1.0.0",
   "description": "wechat boilerplate for egg",
   "private": true,
   "dependencies": {
     "co-wechat": "^2.3.0",
+    "co-wechat-oauth": "^2.0.1",
     "egg": "^2.0.0",
-    "egg-scripts": "^2.1.0"
+    "egg-redis": "^1.0.2",
+    "egg-scripts": "^2.1.0",
+    "egg-view-ejs": "^2.0.0",
+    "egg-wechat-api": "^1.0.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -38,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/lidianhao123/egg-wechat.git"
   },
   "author": "dainli@outlook.com",
   "license": "MIT"

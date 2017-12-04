@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+</head>
+<body>
+  <div class="userinfo">
+    <div><span>昵称：</span><span><%= user.nickname%></span></div>
+    <div><span>语言：</span><span><%= user.language%></span></div>
+    <div><span>头像：</span><img style="border-radius:100%;" width="50" height="50" src="<%= user.headimgurl%>"></div>
+  </div>
+  <script>
+    var wxConfigParam = <%- config%>
+    wx.config(wxConfigParam);
+    wx.ready(function(){
+      console.info('ready');
+      wx.hideMenuItems({
+        menuList: [
+        "menuItem:share:appMessage",
+        "menuItem:share:timeline",
+        "menuItem:openWithSafari"
+        ] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+      });
+    });
+    wx.error(function(res){
+
+    // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+      console.info(res)
+    });
+  </script>
+</body>
+</html>

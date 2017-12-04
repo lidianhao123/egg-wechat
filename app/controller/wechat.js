@@ -2,16 +2,62 @@
 
 const wechat = require('co-wechat');
 const Controller = require('egg').Controller;
-let wechatInstance = null;
+let wechatHandle = null;
+
+const defaultParam = {
+  debug: false,
+  jsApiList: [
+    'checkJsApi',
+    'onMenuShareTimeline',
+    'onMenuShareAppMessage',
+    'onMenuShareQQ',
+    'onMenuShareWeibo',
+    'onMenuShareQZone',
+    'hideMenuItems',
+    'showMenuItems',
+    'hideAllNonBaseMenuItem',
+    'showAllNonBaseMenuItem',
+    'translateVoice',
+    'startRecord',
+    'stopRecord',
+    'onVoiceRecordEnd',
+    'playVoice',
+    'onVoicePlayEnd',
+    'pauseVoice',
+    'stopVoice',
+    'uploadVoice',
+    'downloadVoice',
+    'chooseImage',
+    'previewImage',
+    'uploadImage',
+    'downloadImage',
+    'getNetworkType',
+    'openLocation',
+    'getLocation',
+    'hideOptionMenu',
+    'showOptionMenu',
+    'closeWindow',
+    'scanQRCode',
+    'chooseWXPay',
+    'openProductSpecificView',
+    'addCard',
+    'chooseCard',
+    'openCard',
+  ],
+  url: '', // 'http://public.dainli.com/nhj/index.html'
+};
 
 class WechatController extends Controller {
+  /**
+   * 1. 服务器接口配置时响应微信发送的验证
+   * 2. 公众号消息处理
+   */
   async index() {
-    const {
-      ctx,
-    } = this;
-    if (!wechatInstance) {
-      ctx.app.logger.info('wechatInstance is null new it');
-      wechatInstance = wechat(ctx.app.config.wechat).middleware(async (message, ctx) => {
+    const { ctx } = this;
+
+    if (!wechatHandle) {
+      ctx.app.logger.info('wechatHandle is null new it');
+      wechatHandle = wechat(ctx.app.config.wechat).middleware(async (message, ctx) => {
         // TODO
         /**
          * { ToUserName: 'gh_51e0484d7622',
@@ -32,7 +78,54 @@ class WechatController extends Controller {
       });
     }
     ctx.app.logger.info('after new instance');
-    await wechatInstance(ctx);
+    await wechatHandle(ctx);
+  }
+
+  async authorizeURL() {
+    const { ctx } = this;
+    const {
+      redirect,
+      state,
+      scope, // 'snsapi_base' or 'snsapi_userinfo'
+    } = ctx.query;
+    const url = ctx.app.OAuth.getAuthorizeURL(redirect, state || '', scope || 'snsapi_base');
+    ctx.body = {
+      code: 200,
+      data: url,
+      msg: 'success',
+    };
+  }
+
+  async jssdk() {
+    const { ctx } = this;
+    const { query, app } = ctx;
+    if (!query.url) {
+      ctx.body = {
+        code: 400,
+        msg: 'please query url value',
+      };
+      return;
+    }
+    const param = Object.assign({}, defaultParam, {
+      url: query.url || '',
+      debug: query.debug || false,
+    });
+    let result;
+    try {
+      result = await app.wechatApi.getJsConfig(param);
+    } catch (err) {
+      app.logger.error(err);
+      return;
+    }
+    if (query.callback) {
+      ctx.body = query.callback + '(' + JSON.stringify(result) + ')';
+    } else {
+      ctx.body = {
+        code: 200,
+        data: result,
+        msg: 'success',
+      };
+    }
   }
 }
 

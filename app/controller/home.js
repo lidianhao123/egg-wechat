@@ -50,15 +50,14 @@ class HomeController extends Controller {
     this.ctx.body = 'hi, egg';
   }
   async test() {
-    const { ctx } = this;
-    const { app } = ctx;
-    ctx.app.logger.info('code = %s', ctx.query.code);
+    const { ctx, app } = this;
+    app.logger.info('code = %s', ctx.query.code);
     let user;
     if (ctx.session.user) {
-      ctx.app.logger.info('session.user.openid = %s', ctx.session.user.openid);
+      app.logger.info('session.user.openid = %s', ctx.session.user.openid);
       user = ctx.session.user;
     } else {
-      user = await ctx.app.OAuth.getUserByCode(ctx.query.code);
+      user = await app.OAuth.getUserByCode(ctx.query.code);
       ctx.session.user = user;
     }
     app.logger.info('test ctx.href = %s', ctx.href);
@@ -70,8 +69,8 @@ class HomeController extends Controller {
     await ctx.render('test.ejs', { config, user });
   }
   async test2() {
-    this.ctx.app.logger.info('test2 href= ', this.ctx.href);
-    this.ctx.app.logger.info('test2 origin= ', this.ctx.origin);
+    this.app.logger.info('test2 href= ', this.ctx.href);
+    this.app.logger.info('test2 origin= ', this.ctx.origin);
     await this.ctx.render('test2.ejs');
   }
 }

@@ -53,11 +53,11 @@ class WechatController extends Controller {
    * 2. 公众号消息处理
    */
   async index() {
-    const { ctx } = this;
+    const { ctx, app, logger } = this;
 
     if (!wechatHandle) {
-      ctx.app.logger.info('wechatHandle is null new it');
-      wechatHandle = wechat(ctx.app.config.wechat).middleware(async (message, ctx) => {
+      app.logger.info('wechatHandle is null new it');
+      wechatHandle = wechat(app.config.wechat).middleware(async (message, ctx) => {
         // TODO
         /**
          * { ToUserName: 'gh_51e0484d7622',
@@ -67,7 +67,7 @@ class WechatController extends Controller {
          * Content: '6',
          * MsgId: '6494513464291382253' }
          */
-        ctx.app.logger.info('message = %o', message);
+        logger.info('message = %o', message);
         /**
          * 相应请求并且不回复内容场景下进行如下二选一回复即可
          * 1、直接回复success（推荐方式）
@@ -77,18 +77,18 @@ class WechatController extends Controller {
         return 'success';
       });
     }
-    ctx.app.logger.info('after new instance');
+    logger.info('after new instance');
     await wechatHandle(ctx);
   }
 
   async authorizeURL() {
-    const { ctx } = this;
+    const { ctx, app } = this;
     const {
       redirect,
       state,
       scope, // 'snsapi_base' or 'snsapi_userinfo'
     } = ctx.query;
-    const url = ctx.app.OAuth.getAuthorizeURL(redirect, state || '', scope || 'snsapi_base');
+    const url = app.OAuth.getAuthorizeURL(redirect, state || '', scope || 'snsapi_base');
     ctx.body = {
       code: 200,
       data: url,
@@ -97,8 +97,8 @@ class WechatController extends Controller {
   }
 
   async jssdk() {
-    const { ctx } = this;
-    const { query, app } = ctx;
+    const { ctx, app, logger } = this;
+    const { query } = ctx;
     if (!query.url) {
       ctx.body = {
         code: 400,
@@ -114,7 +114,7 @@ class WechatController extends Controller {
     try {
       result = await app.wechatApi.getJsConfig(param);
     } catch (err) {
-      app.logger.error(err);
+      logger.error(err);
       return;
     }
     if (query.callback) {
